@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ghost Checker Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { background-color: #0b0b0b; color: #e0e0e0; font-family: 'Courier New', monospace; display: flex; justify-content: center; padding: 20px; }
+        .window { width: 100%; max-width: 700px; border: 1px solid #333; padding: 20px; border-radius: 8px; background: #111; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        textarea { width: 100%; height: 100px; background: #1a1a1a; color: #00ff00; border: 1px solid #333; margin-bottom: 10px; border-radius: 4px; padding: 10px; box-sizing: border-box; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        button { padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-start { background: #28a745; color: white; }
+        .btn-stop { background: #dc3545; color: white; }
+        #log { height: 300px; overflow-y: auto; background: #000; border: 1px solid #222; padding: 10px; font-size: 13px; border-radius: 4px; }
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .info { color: #3498db; }
+    </style>
+</head>
+<body>
+    <div class="window">
+        <h2>👻 Ghost Hotmail Checker</h2>
+        <textarea id="combo" placeholder="Paste Combo Here (email:password)"></textarea>
+        <textarea id="proxies" placeholder="Proxies (Optional)"></textarea>
+        <div style="margin-bottom: 10px;">
+            <input type="checkbox" id="use_proxy"> <label>Use Proxies</label>
+        </div>
+        <div class="controls">
+            <button class="btn-start" onclick="start()">START</button>
+            <button class="btn-stop" onclick="location.reload()">CLEAR</button>
+        </div>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        var socket = io();
+        function start() {
+            const combo = document.getElementById('combo').value;
+            const proxies = document.getElementById('proxies').value;
+            const use_proxy = document.getElementById('use_proxy').checked;
+            socket.emit('start_check', {combo, proxies, use_proxy});
+        }
+        socket.on('log', function(data) {
+            const logDiv = document.getElementById('log');
+            const item = document.createElement('div');
+            item.className = data.type;
+            item.innerText = data.msg;
+            logDiv.appendChild(item);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        });
+    </script>
+</body>
+</html>
